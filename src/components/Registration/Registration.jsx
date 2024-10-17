@@ -3,23 +3,34 @@ import { useNavigate, Link } from 'react-router-dom';
 import '../../styles.css';
 
 const Registration = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,   
+      [name]: value  
+    });
+  };
 
   const handleRegister = (e) => {
     e.preventDefault();
     const users = JSON.parse(localStorage.getItem('users')) || [];
     
-    const existingUser = users.find(user => user.email === email);
+    const existingUser = users.find(user => user.email === formData.email);
     if (existingUser) {
       setError('A user with this email already exists. Please use a different email.');
       return;
     }
 
-    const newUser = { name, email, password };
+    const newUser = { ...formData }; 
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
     navigate('/login');
@@ -32,23 +43,26 @@ const Registration = () => {
       <form onSubmit={handleRegister}>
         <input
           type="text"
+          name="name"
           placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={formData.name}
+          onChange={handleChange}
           required
         />
         <input
           type="email"
+          name="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
           required
         />
         <input
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
           required
         />
         <button type="submit">Register</button>
